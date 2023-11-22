@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDTO } from './dto/create-user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -9,45 +8,43 @@ import { UpdateUserDTO } from './dto/update-user';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
+        @InjectRepository(User) private userRepository: Repository<User>,
     ) {}
 
 
     async fetchList(): Promise<ReadUserDTO[]> {
-        const list = await this.userRepository.find();
-        const parseList:ReadUserDTO[] = list.map((value) => {
-            const returnObj:ReadUserDTO = {
+        const user = await this.userRepository.find();
+        const parseUser:ReadUserDTO[] = user.map((value) => {
+            return {
                 uid: value.id,
                 email: value.email,
                 userName: value.username,
                 location: value.location,
                 phone: value.phone,
-            }
-            return returnObj;
+            };
         })
-        return parseList;
+        return parseUser;
     }
 
     async fetchObject(id: number): Promise<ReadUserDTO> {
-        const object = await this.userRepository.findOneBy({id: id});
-        if (object === undefined)
+        const user = await this.userRepository.findOneBy({id: id});
+        if (user === undefined)
             throw new NotFoundException(`Not found id : ${id}`);
-        // console.log(object);
+        
         return {
-            uid: object.id,
-            email: object.email,
-            userName: object.username,
-            location: object.location,
-            phone: object.phone
+            uid: user.id,
+            email: user.email,
+            userName: user.username,
+            location: user.location,
+            phone: user.phone
         }  
     }
 
-    async create(req: CreateUserDTO) {
-        const newUser: User = this.userRepository.create({
+    async create(req: User) {
+        const newUser = this.userRepository.create({
             email: req.email,
             password: req.password,
-            username: req.userName,
+            username: req.username,
             location: req.location,
             phone: req.phone,
         })

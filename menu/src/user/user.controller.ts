@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Put, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDTO } from './dto/create-user';
 import { ReadUserDTO } from './dto/read-user';
 import { UpdateUserDTO } from './dto/update-user';
+import { User } from './user.entity';
 
 @Controller('user')
 export class UserController {
@@ -20,10 +20,7 @@ export class UserController {
     }
 
     @Post()
-    async createUser(
-        @Body() req: CreateUserDTO) {
-            console.log("post 호출");
-            console.log(req)
+    async createUser(@Body() req: User): Promise<void> {
             await this.userSevice.create(req);
     }
 
@@ -34,7 +31,6 @@ export class UserController {
 
     @Put('/patchObject/:id')
     async updateUser(@Param('id') id: number, @Body() req: UpdateUserDTO): Promise<void> {
-        console.log(req);
         await this.userSevice.release(id, req);
     }
 }
